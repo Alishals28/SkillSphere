@@ -15,8 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from availability.urls import public_urlpatterns as availability_public_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Authentication & User Management
+    path('api/', include('users.urls')),
+    path('auth/', include('social_django.urls', namespace='social')),
+    
+    # Core Features
+    path('api/skills/', include('skills.urls')),
+    path('api/availability/', include('availability.urls')),
+    path('api/bookings/', include('bookings.urls')),
+    
+    # Public endpoints (no auth required)
+    path('api/', include(availability_public_urls)),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
