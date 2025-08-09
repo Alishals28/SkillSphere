@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Session Confirmed - SkillSphere</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #10B981; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .button { display: inline-block; background: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+        .footer { padding: 20px; text-align: center; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 SkillSphere</h1>
+            <h2>✅ Session Confirmed!</h2>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{ user.first_name }},</p>
+            
+            <p>Great news! Your session has been confirmed.</p>
+            
+            <div style="background: white; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                <strong>Session Details:</strong><br>
+                📝 Subject: {{ notification.payload.subject }}<br>
+                👨‍🏫 Mentor: {{ notification.payload.mentor_name }}<br>
+                📅 Date & Time: {{ notification.payload.confirmed_start|date:"M d, Y" }} at {{ notification.payload.confirmed_start|time:"g:i A" }}<br>
+                ⏱️ Duration: {{ notification.payload.confirmed_start|timeuntil:notification.payload.confirmed_end }}
+            </div>
+            
+            <p>{{ notification.message }}</p>
+            
+            {% if notification.action_url %}
+            <p style="text-align: center;">
+                <a href="{{ site_url }}{{ notification.action_url }}" class="button">
+                    {{ action_text }}
+                </a>
+            </p>
+            {% endif %}
+            
+            <p><strong>What's next?</strong></p>
+            <ul>
+                <li>You'll receive a reminder 30 minutes before the session</li>
+                <li>Join the session using the link that will be provided</li>
+                <li>Come prepared with your questions</li>
+                <li>Don't forget to provide feedback after the session</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from SkillSphere.<br>
+            Visit your <a href="{{ site_url }}/learner/dashboard">learner dashboard</a> to manage your sessions.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -45,7 +45,7 @@ class Booking(models.Model):
     )
     
     # Session details
-    subject = models.CharField(max_length=200, help_text="What will be covered in this session")
+    subject = models.CharField(max_length=200, default='Mentoring Session', help_text="What will be covered in this session")
     requested_skills = models.ManyToManyField(
         'skills.Skill',
         blank=True,
@@ -250,7 +250,7 @@ class BookingStatusHistory(models.Model):
         related_name='status_history'
     )
     from_status = models.CharField(max_length=30, blank=True)
-    to_status = models.CharField(max_length=30)
+    to_status = models.CharField(max_length=30, default='pending')
     changed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

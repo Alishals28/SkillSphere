@@ -145,7 +145,7 @@ class User(AbstractUser):
 class UserInterest(models.Model):
     """Learner interests/topics"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='interests')
-    interest = models.CharField(max_length=100)
+    interest = models.CharField(max_length=100, default='learning')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -159,8 +159,8 @@ class UserInterest(models.Model):
 class SocialProfile(models.Model):
     """Store social auth profile data"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='social_profile')
-    provider = models.CharField(max_length=50)
-    social_id = models.CharField(max_length=100)
+    provider = models.CharField(max_length=50, default='local')
+    social_id = models.CharField(max_length=100, default='')
     avatar_url = models.URLField(blank=True)
     extra_data = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

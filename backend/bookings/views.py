@@ -19,6 +19,7 @@ from .serializers import (
 from users.permissions import IsMentor, IsMentorOrAdmin
 from users.models import User
 from availability.models import AvailabilitySlot
+from notifications.services import NotificationService
 
 
 class BookingListView(generics.ListAPIView):
@@ -86,6 +87,9 @@ class BookingCreateView(generics.CreateAPIView):
                 booking.availability_slot.is_booked = True
                 booking.availability_slot.save()
             
+            # Send notification to mentor
+            NotificationService.send_booking_request_notification(booking)
+            
             response_serializer = BookingSerializer(booking)
             return Response(
                 response_serializer.data, 
@@ -139,7 +143,8 @@ def accept_booking(request, booking_id):
     booking.confirmed_at = timezone.now()
     booking.save()
     
-    # TODO: Send notification to learner
+    # Send notification to learner
+    NotificationService.send_booking_confirmed_notification(booking)
     
     serializer = BookingSerializer(booking)
     return Response(serializer.data)
@@ -223,7 +228,8 @@ def cancel_booking(request, booking_id):
         booking.availability_slot.is_booked = False
         booking.availability_slot.save()
     
-    # TODO: Send notification to other party
+    # Send notification to other party
+    NotificationService.send_booking_cancelled_notification(booking, user)
     
     serializer = BookingSerializer(booking)
     return Response(serializer.data)
@@ -307,6 +313,9 @@ def submit_feedback(request, booking_id):
     setattr(booking, feedback_field, feedback)
     setattr(booking, rating_field, int(rating))
     booking.save()
+    
+    # Send notification to the other party
+    NotificationService.send_feedback_received_notification(booking, user)
     
     # Update mentor's overall rating
     if user.role != 'mentor':  # Learner giving feedback

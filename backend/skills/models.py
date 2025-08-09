@@ -114,7 +114,7 @@ class MentorTag(models.Model):
         related_name='mentor_tags',
         limit_choices_to={'role': 'mentor'}
     )
-    tag = models.CharField(max_length=50)
+    tag = models.CharField(max_length=50, default='general')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

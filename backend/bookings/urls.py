@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import ical_views
 
 app_name = 'bookings'
 
@@ -15,6 +16,10 @@ urlpatterns = [
     path('<int:booking_id>/cancel/', views.cancel_booking, name='cancel-booking'),
     path('<int:booking_id>/complete/', views.complete_booking, name='complete-booking'),
     path('<int:booking_id>/feedback/', views.submit_feedback, name='submit-feedback'),
+    
+    # Calendar exports
+    path('calendar.ics', ical_views.export_user_calendar, name='export-user-calendar'),
+    path('<int:booking_id>/calendar.ics', ical_views.export_booking_ical, name='export-booking-ical'),
     
     # Dashboard and stats
     path('mentor-dashboard/', views.MentorDashboardView.as_view(), name='mentor-dashboard'),

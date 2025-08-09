@@ -6,6 +6,19 @@ from django.utils import timezone
 from .models import User, UserInterest, SocialProfile
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """Basic user serializer for references in other models"""
+    full_name = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'email', 'first_name', 'last_name', 'full_name',
+            'role', 'profile_picture', 'is_mentor_approved'
+        )
+        read_only_fields = fields
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer for user registration"""
     

@@ -23,7 +23,7 @@ class WeeklyAvailability(models.Model):
         related_name='weekly_availability',
         limit_choices_to={'role': 'mentor'}
     )
-    weekday = models.IntegerField(choices=WEEKDAY_CHOICES)
+    weekday = models.IntegerField(choices=WEEKDAY_CHOICES, default=0)
     start_time = models.TimeField()  # In mentor's timezone
     end_time = models.TimeField()    # In mentor's timezone
     is_active = models.BooleanField(default=True)

@@ -31,6 +31,8 @@ urlpatterns = [
     path('api/skills/', include('skills.urls')),
     path('api/availability/', include('availability.urls')),
     path('api/bookings/', include('bookings.urls')),
+    path('api/notifications/', include('notifications.urls')),
+    path('api/ai/', include('ai.urls')),
     
     # Public endpoints (no auth required)
     path('api/', include(availability_public_urls)),

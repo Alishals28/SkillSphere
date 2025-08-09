@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Booking Request - SkillSphere</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #4F46E5; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .button { display: inline-block; background: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+        .footer { padding: 20px; text-align: center; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 SkillSphere</h1>
+            <h2>New Booking Request</h2>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{ user.first_name }},</p>
+            
+            <p>You have received a new booking request!</p>
+            
+            <div style="background: white; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                <strong>Session Details:</strong><br>
+                📝 Subject: {{ notification.payload.subject }}<br>
+                👤 Learner: {{ notification.payload.learner_name }}<br>
+                📅 Requested Time: {{ notification.payload.requested_start|date:"M d, Y" }} at {{ notification.payload.requested_start|time:"g:i A" }}<br>
+                ⏱️ Duration: {{ notification.payload.requested_start|timeuntil:notification.payload.requested_end }}
+            </div>
+            
+            <p>{{ notification.message }}</p>
+            
+            {% if notification.action_url %}
+            <p style="text-align: center;">
+                <a href="{{ site_url }}{{ notification.action_url }}" class="button">
+                    {{ action_text }}
+                </a>
+            </p>
+            {% endif %}
+            
+            <p>Please review the request and respond as soon as possible. Requests expire after 7 days if not responded to.</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from SkillSphere.<br>
+            Visit your <a href="{{ site_url }}/mentor/dashboard">mentor dashboard</a> to manage all your bookings.</p>
+        </div>
+    </div>
+</body>
+</html>
