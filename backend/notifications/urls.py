@@ -15,6 +15,11 @@ urlpatterns = [
     path('stats/', views.notification_stats, name='notification-stats'),
     path('preferences/', views.NotificationPreferenceView.as_view(), name='notification-preferences'),
     
+    # Real-time features
+    path('websocket-info/', views.NotificationWebSocketInfoView.as_view(), name='notification-websocket-info'),
+    path('test/', views.test_notification, name='test-notification'),
+    path('push/', views.send_push_notification, name='send-push-notification'),
+    
     # Admin
     path('create/', views.CreateNotificationView.as_view(), name='create-notification'),
 ]

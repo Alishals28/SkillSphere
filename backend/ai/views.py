@@ -1,20 +1,28 @@
-from rest_framework import generics, permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, permissions, status, filters
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Avg, Count
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import AIResponse, LearningPath, SkillAssessment, MentorRecommendation
 from .services import AIService
 from .serializers import (
     AIResponseSerializer,
     LearningPathSerializer,
+    LearningPathCreateSerializer,
     SkillAssessmentSerializer,
+    SkillAssessmentCreateSerializer,
     MentorRecommendationSerializer,
-    QuestionAnswerSerializer
+    QuestionAnswerSerializer,
+    AIInsightSerializer,
+    AIConfigurationSerializer
 )
 from skills.models import Skill
+from users.models import User
 
 
 class AIResponseListView(generics.ListAPIView):
@@ -314,3 +322,129 @@ def ai_dashboard_stats(request):
             'qa_assistant': True
         }
     })
+
+
+class LearningPathViewSet(ModelViewSet):
+    """
+    ViewSet for learning paths with CRUD operations
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return LearningPathCreateSerializer
+        return LearningPathSerializer
+    
+    def get_queryset(self):
+        if self.request.user.role == 'learner':
+            return LearningPath.objects.filter(learner=self.request.user)
+        return LearningPath.objects.filter(
+            learner__learner_bookings__mentor=self.request.user
+        ).distinct()
+    
+    def perform_create(self, serializer):
+        if self.request.user.role != 'learner':
+            raise permissions.PermissionDenied('Only learners can create learning paths')
+        serializer.save(learner=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def mark_step_complete(self, request, pk=None):
+        """Mark a learning path step as complete"""
+        learning_path = self.get_object()
+        step_id = request.data.get('step_id')
+        
+        if not step_id:
+            return Response(
+                {'error': 'step_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            step = learning_path.steps.get(id=step_id)
+            step.is_completed = True
+            step.completed_at = timezone.now()
+            step.save()
+            
+            # Update overall progress
+            total_steps = learning_path.steps.count()
+            completed_steps = learning_path.steps.filter(is_completed=True).count()
+            learning_path.progress_percentage = int((completed_steps / total_steps) * 100)
+            learning_path.save()
+            
+            return Response({'message': 'Step marked as complete'})
+        except learning_path.steps.model.DoesNotExist:
+            return Response(
+                {'error': 'Step not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class SkillAssessmentViewSet(ModelViewSet):
+    """
+    ViewSet for skill assessments
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return SkillAssessmentCreateSerializer
+        return SkillAssessmentSerializer
+    
+    def get_queryset(self):
+        return SkillAssessment.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class MentorRecommendationViewSet(ReadOnlyModelViewSet):
+    """
+    ViewSet for mentor recommendations (read-only)
+    """
+    serializer_class = MentorRecommendationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        if self.request.user.role != 'learner':
+            return MentorRecommendation.objects.none()
+        
+        return MentorRecommendation.objects.filter(
+            learner=self.request.user
+        ).order_by('-match_score', '-created_at')
+    
+    @action(detail=True, methods=['post'])
+    def mark_viewed(self, request, pk=None):
+        """Mark recommendation as viewed"""
+        recommendation = self.get_object()
+        recommendation.is_viewed = True
+        recommendation.save()
+        return Response({'message': 'Marked as viewed'})
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def ai_insights(request):
+    """
+    Get AI-powered insights for the user
+    GET /api/ai/insights/
+    """
+    user = request.user
+    insights = []
+    
+    # Learning progress insights for learners
+    if user.role == 'learner':
+        learning_paths = LearningPath.objects.filter(learner=user)
+        for path in learning_paths:
+            if path.progress_percentage > 0:
+                insights.append({
+                    'insight_type': 'learning_progress',
+                    'title': f'Progress on {path.title}',
+                    'description': f'You are {path.progress_percentage}% complete',
+                    'data': {'path_id': path.id, 'progress': path.progress_percentage},
+                    'confidence_score': 0.9,
+                    'recommendations': ['Continue with your current learning path'],
+                    'created_at': timezone.now()
+                })
+    
+    serializer = AIInsightSerializer(insights, many=True)
+    return Response(serializer.data)

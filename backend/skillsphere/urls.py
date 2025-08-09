@@ -33,6 +33,8 @@ urlpatterns = [
     path('api/bookings/', include('bookings.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/ai/', include('ai.urls')),
+    path('api/chat/', include('chat.urls')),
+    path('api/search/', include('search.urls')),
     
     # Public endpoints (no auth required)
     path('api/', include(availability_public_urls)),

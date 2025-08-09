@@ -2,7 +2,10 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from .models import Notification, NotificationPreference
+from .serializers import NotificationSerializer
 from typing import Optional, Dict, Any
 import logging
 
@@ -48,7 +51,53 @@ class NotificationService:
         if send_email:
             NotificationService.send_email_notification(notification)
         
+        # Send real-time notification via WebSocket
+        NotificationService.send_realtime_notification(notification)
+        
         return notification
+    
+    @staticmethod
+    def send_realtime_notification(notification: Notification) -> bool:
+        """
+        Send real-time notification via WebSocket
+        """
+        try:
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                # Serialize notification data
+                serializer = NotificationSerializer(notification)
+                notification_data = serializer.data
+                
+                # Send to user's notification group
+                group_name = f"notifications_{notification.user.id}"
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                    {
+                        'type': 'notification_message',
+                        'notification': notification_data
+                    }
+                )
+                
+                # Also send updated unread count
+                unread_count = Notification.objects.filter(
+                    user=notification.user,
+                    is_read=False
+                ).count()
+                
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                    {
+                        'type': 'unread_count_update',
+                        'count': unread_count
+                    }
+                )
+                
+                return True
+                
+        except Exception as e:
+            logger.error(f"Failed to send real-time notification: {e}")
+            
+        return False
     
     @staticmethod
     def send_email_notification(notification: Notification) -> bool:

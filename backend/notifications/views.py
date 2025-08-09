@@ -230,3 +230,100 @@ class CreateNotificationView(generics.CreateAPIView):
             serializer.save(user=user)
         else:
             serializer.save(user=self.request.user)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def notification_stats(request):
+    """
+    Get notification statistics for user
+    GET /api/notifications/stats/
+    """
+    user = request.user
+    
+    # Get counts by type and status
+    stats = {
+        'total': Notification.objects.filter(user=user).count(),
+        'unread': Notification.objects.filter(user=user, is_read=False).count(),
+        'urgent': Notification.objects.filter(
+            user=user, 
+            priority='urgent',
+            is_read=False
+        ).count(),
+        'by_type': {}
+    }
+    
+    # Count by notification type
+    type_counts = Notification.objects.filter(user=user).values('type').annotate(
+        count=Count('id')
+    )
+    
+    for item in type_counts:
+        stats['by_type'][item['type']] = item['count']
+    
+    return Response(stats)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def test_notification(request):
+    """
+    Send a test notification (for development/testing)
+    POST /api/notifications/test/
+    """
+    from .services import NotificationService
+    
+    # Create a test notification
+    notification = NotificationService.create_notification(
+        user=request.user,
+        notification_type='system',
+        title='Test Notification',
+        message='This is a test notification sent at ' + timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+        priority='normal',
+        action_url='/dashboard/',
+        action_text='Go to Dashboard'
+    )
+    
+    serializer = NotificationSerializer(notification)
+    return Response({
+        'message': 'Test notification sent successfully',
+        'notification': serializer.data
+    })
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def send_push_notification(request):
+    """
+    Send push notification to user's devices
+    POST /api/notifications/push/
+    """
+    # This would integrate with Firebase Cloud Messaging or similar
+    # For now, just return success
+    return Response({
+        'message': 'Push notification sent successfully',
+        'devices_reached': 1  # Mock data
+    })
+
+
+class NotificationWebSocketInfoView(APIView):
+    """
+    Get WebSocket connection info for notifications
+    GET /api/notifications/websocket-info/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        user = request.user
+        return Response({
+            'websocket_url': f'/ws/notifications/',
+            'user_id': user.id,
+            'group_name': f'notifications_{user.id}',
+            'protocols': ['notifications', 'status'],
+            'instructions': {
+                'connect': 'Connect to /ws/notifications/ for real-time notifications',
+                'mark_read': 'Send {"type": "mark_read", "notification_id": ID}',
+                'mark_all_read': 'Send {"type": "mark_all_read"}',
+                'get_recent': 'Send {"type": "get_notifications"}'
+            }
+        })

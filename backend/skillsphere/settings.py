@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',
     'social_django',
     'django_countries',
 
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
     'feedback',
     'ai',
     'notifications',
+    'search',
 ]
 
 MIDDLEWARE = [
@@ -96,6 +98,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'skillsphere.wsgi.application'
+ASGI_APPLICATION = 'skillsphere.asgi.application'
+
+# Channel Layers for WebSocket support
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database
