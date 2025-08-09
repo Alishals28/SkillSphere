@@ -6,6 +6,7 @@ from django_countries.fields import CountryField
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 import uuid
+import secrets
 
 
 class User(AbstractUser):
@@ -171,3 +172,79 @@ class SocialProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.provider}"
+
+
+class TwoFactorAuth(models.Model):
+    """Two-Factor Authentication model"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='two_factor_auth')
+    secret_key = models.CharField(max_length=32)  # Base32 encoded secret
+    is_enabled = models.BooleanField(default=False)
+    backup_tokens = models.JSONField(default=list, blank=True)  # Array of backup tokens
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        db_table = 'two_factor_auth'
+    
+    def __str__(self):
+        return f"{self.user.email} - 2FA {'Enabled' if self.is_enabled else 'Disabled'}"
+    
+    def generate_backup_tokens(self, count=8):
+        """Generate backup tokens"""
+        tokens = []
+        for _ in range(count):
+            token = secrets.token_hex(8)  # 16 character hex token
+            tokens.append(token)
+        self.backup_tokens = tokens
+        return tokens
+    
+    def use_backup_token(self, token):
+        """Use a backup token and remove it from the list"""
+        if token in self.backup_tokens:
+            self.backup_tokens.remove(token)
+            self.save()
+            return True
+        return False
+
+
+class TwoFactorSession(models.Model):
+    """Temporary session for 2FA verification"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    session_key = models.CharField(max_length=64, unique=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    class Meta:
+        db_table = 'two_factor_sessions'
+    
+    def __str__(self):
+        return f"{self.user.email} - 2FA Session"
+    
+    def is_expired(self):
+        return django_timezone.now() > self.expires_at
+
+
+class TwoFactorAuditLog(models.Model):
+    """Audit log for 2FA events"""
+    ACTION_CHOICES = [
+        ('setup', 'Setup'),
+        ('enable', 'Enable'),
+        ('disable', 'Disable'),
+        ('verify_success', 'Verify Success'),
+        ('verify_failure', 'Verify Failure'),
+        ('backup_used', 'Backup Token Used'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'two_factor_audit_logs'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.email} - {self.action} at {self.created_at}"

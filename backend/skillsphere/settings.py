@@ -64,6 +64,10 @@ INSTALLED_APPS = [
     'ai',
     'notifications',
     'search',
+    'analytics',
+    'reviews',
+    'integrations',
+    'gamification',
 ]
 
 MIDDLEWARE = [

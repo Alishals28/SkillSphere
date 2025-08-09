@@ -3,7 +3,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from .models import User, UserInterest, SocialProfile
+from .models import User, UserInterest, SocialProfile, TwoFactorAuth
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -364,3 +364,52 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError("Old password is incorrect.")
         return value
+
+
+class TwoFactorSetupSerializer(serializers.Serializer):
+    """Serializer for setting up 2FA"""
+    password = serializers.CharField(required=True)
+    
+    def validate_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Password is incorrect.")
+        return value
+
+
+class TwoFactorVerifySerializer(serializers.Serializer):
+    """Serializer for verifying 2FA codes"""
+    code = serializers.CharField(max_length=6, min_length=6)
+    
+    def validate_code(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Code must be 6 digits.")
+        return value
+
+
+class TwoFactorEnableSerializer(serializers.Serializer):
+    """Serializer for enabling 2FA"""
+    code = serializers.CharField(max_length=6, min_length=6)
+    
+    def validate_code(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Code must be 6 digits.")
+        return value
+
+
+class TwoFactorBackupTokenSerializer(serializers.Serializer):
+    """Serializer for backup token verification"""
+    token = serializers.CharField(max_length=16, min_length=16)
+
+
+class TwoFactorStatusSerializer(serializers.ModelSerializer):
+    """Serializer for 2FA status"""
+    backup_tokens_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TwoFactorAuth
+        fields = ['is_enabled', 'backup_tokens_count', 'created_at', 'last_used']
+        read_only_fields = fields
+    
+    def get_backup_tokens_count(self, obj):
+        return len([token for token in obj.backup_tokens if token])

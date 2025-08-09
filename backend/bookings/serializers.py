@@ -1,7 +1,12 @@
 from rest_framework import serializers
 from django.db.models import Avg, Count
 from django.utils import timezone
-from .models import Booking, BookingStatusHistory
+from datetime import timedelta
+from .models import (
+    Booking, BookingStatusHistory, RecurringBookingTemplate,
+    GroupBooking, GroupBookingParticipant, BookingPackage,
+    BookingPackagePurchase, BookingTemplate
+)
 from skills.serializers import SkillSerializer
 
 
@@ -265,3 +270,176 @@ class BookingUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Booking must be in the future")
         
         return data
+
+
+# Advanced Booking Serializers
+
+class RecurringBookingTemplateSerializer(serializers.ModelSerializer):
+    """Serializer for recurring booking templates"""
+    mentor_name = serializers.CharField(source='mentor.full_name', read_only=True)
+    learner_name = serializers.CharField(source='learner.full_name', read_only=True)
+    next_booking_date = serializers.SerializerMethodField()
+    bookings_generated_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = RecurringBookingTemplate
+        fields = [
+            'id', 'mentor', 'mentor_name', 'learner', 'learner_name',
+            'subject', 'start_date', 'end_date', 'frequency',
+            'day_of_week', 'start_time', 'duration_minutes',
+            'hourly_rate', 'currency', 'is_active', 'max_bookings',
+            'bookings_generated', 'notes', 'next_booking_date',
+            'bookings_generated_count', 'created_at'
+        ]
+        read_only_fields = ['bookings_generated']
+    
+    def get_next_booking_date(self, obj):
+        """Get the next date when a booking will be generated"""
+        return obj.get_next_booking_date()
+    
+    def get_bookings_generated_count(self, obj):
+        """Get count of bookings generated from this template"""
+        return obj.generated_bookings.count()
+    
+    def validate(self, data):
+        if data.get('start_date') and data.get('end_date'):
+            if data['start_date'] >= data['end_date']:
+                raise serializers.ValidationError("Start date must be before end date")
+        
+        if data.get('start_date') and data['start_date'] <= timezone.now().date():
+            raise serializers.ValidationError("Start date must be in the future")
+        
+        return data
+
+
+class GroupBookingParticipantSerializer(serializers.ModelSerializer):
+    """Serializer for group booking participants"""
+    participant_name = serializers.CharField(source='participant.full_name', read_only=True)
+    
+    class Meta:
+        model = GroupBookingParticipant
+        fields = [
+            'id', 'participant', 'participant_name', 'joined_at',
+            'status', 'rating', 'feedback'
+        ]
+
+
+class GroupBookingSerializer(serializers.ModelSerializer):
+    """Serializer for group bookings"""
+    mentor_name = serializers.CharField(source='mentor.full_name', read_only=True)
+    participants = GroupBookingParticipantSerializer(many=True, read_only=True)
+    participant_count = serializers.SerializerMethodField()
+    available_spots = serializers.SerializerMethodField()
+    is_full = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = GroupBooking
+        fields = [
+            'id', 'mentor', 'mentor_name', 'title', 'description',
+            'requested_start_utc', 'requested_end_utc', 'confirmed_start_utc',
+            'confirmed_end_utc', 'status', 'max_participants', 'hourly_rate',
+            'currency', 'meeting_url', 'meeting_id', 'participants',
+            'participant_count', 'available_spots', 'is_full',
+            'average_rating', 'created_at', 'updated_at'
+        ]
+    
+    def get_participant_count(self, obj):
+        return obj.participants.filter(status='joined').count()
+    
+    def get_available_spots(self, obj):
+        return obj.max_participants - self.get_participant_count(obj)
+    
+    def get_is_full(self, obj):
+        return self.get_available_spots(obj) <= 0
+    
+    def get_average_rating(self, obj):
+        ratings = obj.participants.filter(rating__isnull=False).values_list('rating', flat=True)
+        return sum(ratings) / len(ratings) if ratings else None
+
+
+class BookingPackageSerializer(serializers.ModelSerializer):
+    """Serializer for booking packages"""
+    mentor_name = serializers.CharField(source='mentor.full_name', read_only=True)
+    sessions_used = serializers.SerializerMethodField()
+    sessions_remaining = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookingPackage
+        fields = [
+            'id', 'mentor', 'mentor_name', 'title', 'description',
+            'number_of_sessions', 'price', 'currency', 'discount_percentage',
+            'validity_days', 'is_active', 'sessions_used', 'sessions_remaining',
+            'created_at', 'updated_at'
+        ]
+    
+    def get_sessions_used(self, obj):
+        # Count sessions from all purchases of this package
+        return sum(purchase.sessions_used for purchase in obj.purchases.all())
+    
+    def get_sessions_remaining(self, obj):
+        # Count remaining sessions from all active purchases
+        return sum(purchase.sessions_remaining for purchase in obj.purchases.filter(is_active=True))
+
+
+class BookingPackagePurchaseSerializer(serializers.ModelSerializer):
+    """Serializer for booking package purchases"""
+    package_title = serializers.CharField(source='package.title', read_only=True)
+    learner_name = serializers.CharField(source='learner.full_name', read_only=True)
+    sessions_remaining = serializers.SerializerMethodField()
+    days_remaining = serializers.SerializerMethodField()
+    bookings_used = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookingPackagePurchase
+        fields = [
+            'id', 'package', 'package_title', 'learner', 'learner_name',
+            'purchase_date', 'expiry_date', 'price_paid', 'currency',
+            'sessions_used', 'is_active', 'sessions_remaining',
+            'days_remaining', 'bookings_used'
+        ]
+        read_only_fields = ['purchase_date', 'expiry_date', 'sessions_used']
+    
+    def get_sessions_remaining(self, obj):
+        return obj.sessions_remaining
+    
+    def get_days_remaining(self, obj):
+        if obj.expiry_date:
+            delta = obj.expiry_date - timezone.now().date()
+            return max(0, delta.days)
+        return None
+    
+    def get_bookings_used(self, obj):
+        return obj.bookings_used.filter(status='completed').count()
+
+
+class BookingTemplateSerializer(serializers.ModelSerializer):
+    """Serializer for booking templates"""
+    mentor_name = serializers.CharField(source='mentor.full_name', read_only=True)
+    usage_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookingTemplate
+        fields = [
+            'id', 'mentor', 'mentor_name', 'title', 'description',
+            'default_duration_minutes', 'default_rate', 'currency',
+            'template_data', 'is_active', 'usage_count', 'created_at'
+        ]
+    
+    def get_usage_count(self, obj):
+        return obj.bookings_created.count()
+
+
+# Enhanced Booking Serializer with Advanced Features
+class AdvancedBookingSerializer(BookingSerializer):
+    """Enhanced booking serializer with advanced booking relationships"""
+    recurring_template_info = RecurringBookingTemplateSerializer(source='recurring_template', read_only=True)
+    booking_template_info = BookingTemplateSerializer(source='booking_template', read_only=True)
+    package_purchase_info = BookingPackagePurchaseSerializer(source='package_purchase', read_only=True)
+    
+    class Meta(BookingSerializer.Meta):
+        fields = BookingSerializer.Meta.fields + [
+            'recurring_template', 'recurring_template_info',
+            'booking_template', 'booking_template_info',
+            'package_purchase', 'package_purchase_info'
+        ]
