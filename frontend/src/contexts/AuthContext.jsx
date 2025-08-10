@@ -131,25 +131,53 @@ export const AuthProvider = ({ children }) => {
         first_name: formData.firstName,
         last_name: formData.lastName,
         role: formData.role,
-        bio: formData.bio,
-        phone_number: formData.phone,
-        country: formData.country,
-        date_of_birth: formData.dateOfBirth,
-        timezone: formData.timezone,
-        
-        // Role-specific fields
-        learning_goals: formData.learningGoals,
-        experience_level: formData.experienceLevel,
-        preferred_session_duration: formData.preferredSessionDuration,
-        
-        // Mentor fields
-        mentor_bio: formData.mentorBio,
-        teaching_experience: formData.teachingExperience,
-        hourly_rate: formData.hourlyRate,
-        portfolio_url: formData.portfolioUrl,
-        linkedin_url: formData.linkedinUrl,
-        github_url: formData.githubUrl,
+        // Generate username from email (part before @)
+        username: formData.email.split('@')[0],
       };
+
+      // Add optional fields only if they have values
+      if (formData.bio && formData.bio.trim()) userData.bio = formData.bio;
+      if (formData.phone && formData.phone.trim()) userData.phone_number = formData.phone;
+      if (formData.country && formData.country.trim()) userData.country = formData.country;
+      if (formData.dateOfBirth) userData.date_of_birth = formData.dateOfBirth;
+      if (formData.timezone && formData.timezone.trim()) userData.timezone = formData.timezone;
+      
+      // Role-specific fields for learners
+      if (formData.role === 'learner') {
+        if (formData.learningGoals && formData.learningGoals.trim()) {
+          userData.learning_goals = formData.learningGoals;
+        }
+        if (formData.experienceLevel && formData.experienceLevel.trim()) {
+          userData.experience_level = formData.experienceLevel;
+        }
+        if (formData.preferredSessionDuration) {
+          userData.preferred_session_duration = formData.preferredSessionDuration;
+        }
+      }
+      
+      // Mentor fields
+      if (formData.role === 'mentor') {
+        if (formData.mentorBio && formData.mentorBio.trim()) {
+          userData.mentor_bio = formData.mentorBio;
+        }
+        if (formData.teachingExperience && formData.teachingExperience.trim()) {
+          userData.teaching_experience = formData.teachingExperience;
+        }
+        if (formData.hourlyRate) {
+          userData.hourly_rate = formData.hourlyRate;
+        }
+        if (formData.portfolioUrl && formData.portfolioUrl.trim()) {
+          userData.portfolio_url = formData.portfolioUrl;
+        }
+        if (formData.linkedinUrl && formData.linkedinUrl.trim()) {
+          userData.linkedin_url = formData.linkedinUrl;
+        }
+        if (formData.githubUrl && formData.githubUrl.trim()) {
+          userData.github_url = formData.githubUrl;
+        }
+      }
+
+      console.log('Cleaned userData being sent:', userData);
 
       // Handle profile picture separately if provided
       if (formData.profilePicture) {
@@ -175,7 +203,28 @@ export const AuthProvider = ({ children }) => {
           
           return { success: true, user: newUser };
         } else {
-          throw new Error(response.error || 'Registration failed');
+          // Handle API error response
+          let errorMessage = 'Registration failed';
+          if (response.error) {
+            if (typeof response.error === 'string') {
+              errorMessage = response.error;
+            } else if (response.error.non_field_errors) {
+              errorMessage = response.error.non_field_errors[0];
+            } else if (response.error.email) {
+              errorMessage = `Email: ${response.error.email[0]}`;
+            } else if (response.error.password) {
+              errorMessage = `Password: ${response.error.password[0]}`;
+            } else {
+              // Extract first field error
+              const firstKey = Object.keys(response.error)[0];
+              if (firstKey && Array.isArray(response.error[firstKey])) {
+                errorMessage = `${firstKey.replace('_', ' ')}: ${response.error[firstKey][0]}`;
+              } else {
+                errorMessage = JSON.stringify(response.error);
+              }
+            }
+          }
+          throw new Error(errorMessage);
         }
       } else {
         // No file upload, send as JSON
@@ -193,41 +242,43 @@ export const AuthProvider = ({ children }) => {
           
           return { success: true, user: newUser };
         } else {
-          throw new Error(response.error || 'Registration failed');
+          // Handle API error response
+          let errorMessage = 'Registration failed';
+          if (response.error) {
+            console.log('Processing API error:', response.error);
+            if (typeof response.error === 'string') {
+              errorMessage = response.error;
+            } else if (response.error.non_field_errors) {
+              errorMessage = response.error.non_field_errors[0];
+            } else if (response.error.email) {
+              errorMessage = `Email: ${response.error.email[0]}`;
+            } else if (response.error.password) {
+              errorMessage = `Password: ${response.error.password[0]}`;
+            } else {
+              // Extract first field error
+              const firstKey = Object.keys(response.error)[0];
+              if (firstKey && Array.isArray(response.error[firstKey])) {
+                errorMessage = `${firstKey.replace('_', ' ')}: ${response.error[firstKey][0]}`;
+              } else {
+                errorMessage = JSON.stringify(response.error);
+              }
+            }
+          }
+          console.log('Final error message:', errorMessage);
+          throw new Error(errorMessage);
         }
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      // This catch block should only handle network errors or unexpected errors
+      console.error('Unexpected registration error:', error);
       
-      // Extract meaningful error message
-      let errorMessage = 'Registration failed. Please try again.';
-      
-      if (error.response) {
-        // Server responded with error status
-        if (error.response.data) {
-          if (typeof error.response.data === 'string') {
-            errorMessage = error.response.data;
-          } else if (error.response.data.error) {
-            errorMessage = error.response.data.error;
-          } else if (error.response.data.message) {
-            errorMessage = error.response.data.message;
-          } else if (error.response.data.detail) {
-            errorMessage = error.response.data.detail;
-          } else if (error.response.data.non_field_errors) {
-            errorMessage = error.response.data.non_field_errors[0];
-          } else if (error.response.data.email) {
-            errorMessage = `Email: ${error.response.data.email[0]}`;
-          } else if (error.response.data.password) {
-            errorMessage = `Password: ${error.response.data.password[0]}`;
-          } else {
-            errorMessage = `Server error (${error.response.status})`;
-          }
-        }
-      } else if (error.message && error.message !== '[object Object]') {
-        errorMessage = error.message;
+      // If it's already an Error we threw, re-throw it
+      if (error.message && error.message !== '[object Object]') {
+        throw error;
       }
       
-      throw new Error(errorMessage);
+      // Otherwise, handle unexpected errors
+      throw new Error('Network error - please check your connection and try again');
     } finally {
       setLoading(false);
     }

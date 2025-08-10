@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/ui/Button';
 import { 
@@ -48,7 +48,6 @@ const RegisterPage = () => {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -133,21 +132,14 @@ const RegisterPage = () => {
     setError('');
 
     try {
-      console.log('Registration form data:', formData);
-      const result = await register(formData);
-      console.log('Registration result:', result);
+      await register(formData);
       
-      if (result.success) {
-        // Show approval modal for mentors
-        if (formData.role === 'mentor') {
-          setShowApprovalModal(true);
-        } else {
-          // Learners can proceed normally - navigate to dashboard
-          navigate('/learner/dashboard');
-        }
+      // Show approval modal for mentors
+      if (formData.role === 'mentor') {
+        setShowApprovalModal(true);
       }
+      // Learners can proceed normally
     } catch (err) {
-      console.error('Registration error:', err);
       setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
@@ -313,83 +305,6 @@ const RegisterPage = () => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="profilePicture">Profile Picture (Optional)</label>
-        <div className="file-upload-wrapper">
-          <input
-            type="file"
-            id="profilePicture"
-            name="profilePicture"
-            accept="image/*"
-            onChange={handleChange}
-            className="file-input"
-          />
-          <label htmlFor="profilePicture" className="file-upload-label">
-            <Upload size={20} />
-            <span>{formData.profilePicture ? formData.profilePicture.name : 'Choose a photo'}</span>
-          </label>
-        </div>
-      </div>
-
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="phone">Phone Number (Optional)</label>
-          <div className="input-wrapper">
-            <Phone size={20} className="input-icon" />
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+1234567890"
-              className="form-input"
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="country">Country (Optional)</label>
-          <div className="input-wrapper">
-            <Globe size={20} className="input-icon" />
-            <select
-              id="country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              className="form-input"
-            >
-              <option value="">Select your country</option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="UK">United Kingdom</option>
-              <option value="AU">Australia</option>
-              <option value="DE">Germany</option>
-              <option value="FR">France</option>
-              <option value="IN">India</option>
-              <option value="JP">Japan</option>
-              <option value="BR">Brazil</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="dateOfBirth">Date of Birth (Optional)</label>
-        <div className="input-wrapper">
-          <Calendar size={20} className="input-icon" />
-          <input
-            type="date"
-            id="dateOfBirth"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            className="form-input"
-          />
-        </div>
-      </div>
-
-      <div className="form-group">
         <label htmlFor="bio">Bio</label>
         <textarea
           id="bio"
@@ -520,40 +435,6 @@ const RegisterPage = () => {
                   value={formData.portfolioUrl}
                   onChange={handleChange}
                   placeholder="https://yourportfolio.com"
-                  className="form-input"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="linkedinUrl">LinkedIn URL (Optional)</label>
-              <div className="input-wrapper">
-                <Briefcase size={20} className="input-icon" />
-                <input
-                  type="url"
-                  id="linkedinUrl"
-                  name="linkedinUrl"
-                  value={formData.linkedinUrl}
-                  onChange={handleChange}
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  className="form-input"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="githubUrl">GitHub URL (Optional)</label>
-              <div className="input-wrapper">
-                <Globe size={20} className="input-icon" />
-                <input
-                  type="url"
-                  id="githubUrl"
-                  name="githubUrl"
-                  value={formData.githubUrl}
-                  onChange={handleChange}
-                  placeholder="https://github.com/yourusername"
                   className="form-input"
                 />
               </div>
