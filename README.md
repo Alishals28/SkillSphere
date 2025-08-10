@@ -301,19 +301,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **OpenAI** - AI integration capabilities
 - **Contributors** - All developers who helped build SkillSphere
 
-## 📞 Support
 
-For support, email [support@skillsphere.com](mailto:support@skillsphere.com) or join our [Discord community](https://discord.gg/skillsphere).
-
-## 🔗 Links
-
-- **Live Demo**: [skillsphere-demo.com](https://skillsphere-demo.com)
-- **Documentation**: [docs.skillsphere.com](https://docs.skillsphere.com)
-- **API Reference**: [api.skillsphere.com](https://api.skillsphere.com)
-
----
-
-<div align="center">
 
 **Built with ❤️ by the SkillSphere Team**
 
