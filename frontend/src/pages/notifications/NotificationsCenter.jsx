@@ -186,7 +186,8 @@ const NotificationsCenter = () => {
         </div>
       </div>
 
-      <div className="notifications-controls">
+      <div className="notifications-content-wrapper">
+        <div className="notifications-controls">
         <div className="search-box">
           <Search className="search-icon" />
           <input
@@ -308,6 +309,7 @@ const NotificationsCenter = () => {
           <p>Showing {filteredNotifications.length} of {notifications.length} notifications</p>
         </div>
       )}
+      </div>
     </div>
   );
 };

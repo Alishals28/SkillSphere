@@ -2,7 +2,7 @@
 .dashboard-page {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
   padding: 0;
   margin: 0;
   overflow-x: hidden;
@@ -29,18 +29,20 @@
 }
 
 .welcome-section h1 {
-  color: #1f2937;
+  color: #1f2937 !important;
   font-size: 1.875rem;
   font-weight: 700;
   margin: 0 0 0.25rem 0;
   font-family: 'Poppins', sans-serif;
+  text-shadow: none !important;
 }
 
 .welcome-section p {
-  color: #6b7280;
+  color: #6b7280 !important;
   font-size: 1rem;
   margin: 0;
   font-weight: 400;
+  text-shadow: none !important;
 }
 
 .header-actions {
@@ -77,7 +79,7 @@
   gap: 0;
 }
 
-/* Make sure SVG icons are visible */
+/* Make sure SVG icons are visible and buttons are clickable */
 .header-btn svg,
 .icon-btn svg {
   width: 24px !important;
@@ -88,49 +90,75 @@
   stroke-width: 2 !important;
   opacity: 1 !important;
   visibility: visible !important;
+  pointer-events: none !important;
+}
+
+/* Ensure all header buttons are functional */
+.header-btn,
+.icon-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 10 !important;
+  background: rgba(20, 184, 166, 0.9) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
 }
 
 .header-btn:hover,
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background: rgba(20, 184, 166, 1) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
 .notification-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
   background: #ef4444 !important;
   color: white !important;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  min-width: 20px;
-  height: 20px;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 12px !important;
+  min-width: 20px !important;
+  height: 20px !important;
   display: flex !important;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-  z-index: 10 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid white !important;
+  z-index: 100 !important;
   opacity: 1 !important;
   visibility: visible !important;
+  pointer-events: none !important;
 }
 
 /* Extra styling for header action buttons */
 .header-actions .icon-btn {
-  background: rgba(0, 0, 0, 0.4) !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(20, 184, 166, 0.9) !important;
   border: 2px solid rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
   position: relative !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 100 !important;
+  transition: all 0.3s ease !important;
 }
 
 .header-actions .icon-btn:hover {
-  background: rgba(0, 0, 0, 0.6) !important;
+  background: rgba(20, 184, 166, 1) !important;
   border: 2px solid rgba(255, 255, 255, 1) !important;
   transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4) !important;
 }
 
 .header-actions .icon-btn svg {
@@ -138,6 +166,9 @@
   fill: none !important;
   color: white !important;
   opacity: 1 !important;
+  width: 24px !important;
+  height: 24px !important;
+  pointer-events: none !important;
 }
 
 /* Force visibility for notification and message icons */
@@ -833,12 +864,13 @@
 }
 
 .stats-title {
-  color: white;
+  color: white !important;
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0 0 1.5rem 0;
   text-align: center;
   font-family: 'Poppins', sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .header-stats {
@@ -903,23 +935,23 @@
 }
 
 .stat-icon.students {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
 }
 
 .stat-icon.rating {
   background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
-.stat-number {
+.stat-card .stat-number {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #1f2937 !important;
   margin-bottom: 0.5rem;
   font-family: 'Poppins', sans-serif;
 }
 
-.stat-label {
-  color: #6b7280;
+.stat-card .stat-label {
+  color: #4b5563 !important;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -1664,4 +1696,113 @@
   .action-btn {
     display: none;
   }
+}
+
+/* Final fixes for button functionality */
+.header-actions button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+.messages-btn,
+.notifications-btn,
+.profile-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Ensure dropdowns work */
+.messages-dropdown,
+.notifications-dropdown {
+  pointer-events: auto !important;
+  z-index: 1001 !important;
+}
+
+/* Force all action buttons to be clickable */
+.action-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* FINAL COMPREHENSIVE HEADER BUTTON FIX */
+.header-actions {
+  display: flex !important;
+  gap: 1rem !important;
+  align-items: center !important;
+  z-index: 100 !important;
+  position: relative !important;
+}
+
+.header-actions button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 101 !important;
+  position: relative !important;
+}
+
+.header-actions .notifications-btn,
+.header-actions .messages-btn,
+.header-actions .profile-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 102 !important;
+  background: rgba(20, 184, 166, 0.9) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.header-actions .notifications-btn:hover,
+.header-actions .messages-btn:hover,
+.header-actions .profile-btn:hover {
+  background: rgba(20, 184, 166, 1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4) !important;
+}
+
+/* Ensure dropdowns work */
+.messages-dropdown,
+.notifications-dropdown {
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+  position: absolute !important;
+}
+
+/* Fix any potential conflicts */
+.dashboard-header * {
+  box-sizing: border-box !important;
+}
+
+/* Ultimate button functionality fix */
+.header-actions button {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+.header-actions .icon-btn svg {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* Force click events to work */
+.notifications-btn,
+.messages-btn,
+.profile-btn {
+  outline: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
 }

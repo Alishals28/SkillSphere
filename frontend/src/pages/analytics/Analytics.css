@@ -1,7 +1,7 @@
 .analytics-page {
   min-height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
   padding: 2rem;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -20,14 +20,14 @@
 }
 
 .header-content h1 {
-  color: #2d3748;
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #14b8a6, #0891b2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: #14b8a6; /* Fallback color */
 }
 
 .header-content p {

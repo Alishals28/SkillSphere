@@ -11,6 +11,10 @@ import UserProfile from './pages/profile/UserProfile';
 import SettingsPage from './pages/settings/Settings';
 import NotificationsCenter from './pages/notifications/NotificationsCenter';
 import Analytics from './pages/analytics/Analytics';
+import BookSessionPage from './pages/booking/BookSessionPage';
+import MentorsPage from './pages/mentors/MentorsPage';
+import SchedulePage from './pages/schedule/SchedulePage';
+import SessionsPage from './pages/sessions/SessionsPage';
 import './styles/globals.css';
 
 function App() {
@@ -53,6 +57,54 @@ function App() {
               element={
                 <ProtectedRoute>
                   <LearnerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Booking Routes */}
+            <Route 
+              path="/book-session" 
+              element={
+                <ProtectedRoute>
+                  <BookSessionPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Mentors Routes */}
+            <Route 
+              path="/mentors" 
+              element={
+                <ProtectedRoute>
+                  <MentorsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Schedule Routes */}
+            <Route 
+              path="/schedule" 
+              element={
+                <ProtectedRoute>
+                  <SchedulePage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Sessions Routes */}
+            <Route 
+              path="/sessions" 
+              element={
+                <ProtectedRoute>
+                  <SessionsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId" 
+              element={
+                <ProtectedRoute>
+                  <SessionsPage />
                 </ProtectedRoute>
               } 
             />

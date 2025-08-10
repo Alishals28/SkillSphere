@@ -1,10 +1,18 @@
 .notifications-center {
   min-height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
   padding: 2rem;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/* White container for notifications content */
+.notifications-content-wrapper {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .notifications-header {
@@ -12,7 +20,7 @@
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -26,15 +34,21 @@
 }
 
 .header-title h1 {
-  color: #2d3748;
   font-size: 2.5rem;
   font-weight: 700;
-  margin: 0;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
 }
+
+.header-title p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0 0 0;
+  color: #64748b;
+}
+
 
 .unread-badge {
   background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
@@ -78,12 +92,11 @@
 }
 
 .notifications-controls {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
 }
 
 .search-box {
@@ -103,8 +116,8 @@
 
 .search-box input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
   background: white;
 }
 
@@ -113,7 +126,7 @@
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: #d2dbe7;
 }
 
 .filter-tabs {
@@ -130,20 +143,20 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
-  color: #64748b;
+  color: #121a25;
 }
 
 .filter-tab:hover {
-  border-color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
+  border-color: #14b8a6;
+  background: rgba(20, 184, 166, 0.1);
+  color: #f7fcfc;
 }
 
 .filter-tab.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #14b8a6, #0891b2);
   color: white;
   border-color: transparent;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
 }
 
 .notifications-list {
@@ -153,14 +166,14 @@
 }
 
 .notification-item {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
 }
 
 .notification-item:hover {
@@ -169,8 +182,8 @@
 }
 
 .notification-item.unread {
-  border-left-color: #667eea;
-  background: rgba(102, 126, 234, 0.02);
+  border-left-color: #14b8a6;
+  background: rgba(20, 184, 166, 0.02);
 }
 
 .notification-item.high {
@@ -220,7 +233,7 @@
 }
 
 .notification-icon.message {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #14b8a6, #0891b2);
   color: white;
 }
 
@@ -241,7 +254,7 @@
 .notification-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #f2f5f9;
   margin: 0 0 0.5rem 0;
 }
 
@@ -253,7 +266,7 @@
 
 .notification-time {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #fafcff;
   font-weight: 500;
 }
 
@@ -266,7 +279,7 @@
 .unread-indicator {
   width: 8px;
   height: 8px;
-  background: #667eea;
+  background: #14b8a6;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -293,7 +306,7 @@
   justify-content: center;
   transition: all 0.3s ease;
   background: #f1f5f9;
-  color: #64748b;
+  color: #10151b;
 }
 
 .action-btn:hover:not(:disabled) {
@@ -327,12 +340,12 @@
 .empty-icon {
   width: 64px;
   height: 64px;
-  color: #94a3b8;
+  color: #c1c8d2;
   margin: 0 auto 1rem;
 }
 
 .empty-state h3 {
-  color: #2d3748;
+  color: #1d232d;
   font-size: 1.5rem;
   margin: 0 0 0.5rem 0;
 }
