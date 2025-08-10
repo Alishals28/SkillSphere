@@ -9,14 +9,23 @@ from .models import User, UserInterest, SocialProfile, TwoFactorAuth
 class UserSerializer(serializers.ModelSerializer):
     """Basic user serializer for references in other models"""
     full_name = serializers.ReadOnlyField()
+    country = serializers.SerializerMethodField()
     
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name', 'full_name',
-            'role', 'profile_picture', 'is_mentor_approved'
+            'role', 'profile_picture', 'is_mentor_approved', 'country'
         )
         read_only_fields = fields
+
+    def get_country(self, obj):
+        if obj.country:
+            return {
+                'code': str(obj.country),
+                'name': obj.country.name
+            }
+        return None
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -84,6 +93,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     interests = serializers.SerializerMethodField()
     full_name = serializers.ReadOnlyField()
     social_profile = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -103,6 +113,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_interests(self, obj):
         return [interest.interest for interest in obj.interests.all()]
+
+    def get_country(self, obj):
+        if obj.country:
+            return {
+                'code': str(obj.country),
+                'name': obj.country.name
+            }
+        return None
 
     def get_social_profile(self, obj):
         try:
@@ -137,6 +155,7 @@ class PublicMentorProfileSerializer(serializers.ModelSerializer):
     """Public serializer for mentor profiles (for browsing)"""
     
     full_name = serializers.ReadOnlyField()
+    country = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
@@ -165,6 +184,14 @@ class PublicMentorProfileSerializer(serializers.ModelSerializer):
 
     def get_tags(self, obj):
         return [tag.tag for tag in obj.mentor_tags.all()]
+
+    def get_country(self, obj):
+        if obj.country:
+            return {
+                'code': str(obj.country),
+                'name': obj.country.name
+            }
+        return None
 
     def get_rating(self, obj):
         from django.db.models import Avg

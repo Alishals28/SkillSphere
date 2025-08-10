@@ -100,11 +100,22 @@ const apiCall = async (method, url, data = null, config = {}) => {
 // Specific API methods
 export const authAPI = {
   login: (email, password) => apiCall('POST', '/auth/login/', { email, password }),
-  register: (userData) => apiCall('POST', '/auth/register/', userData),
+  register: (userData) => {
+    // Handle FormData for file uploads
+    if (userData instanceof FormData) {
+      return apiCall('POST', '/auth/register/', userData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    }
+    // Handle regular JSON data
+    return apiCall('POST', '/auth/register/', userData);
+  },
   logout: (refreshToken) => apiCall('POST', '/auth/logout/', { refresh: refreshToken }),
   refreshToken: (refreshToken) => apiCall('POST', '/auth/token/refresh/', { refresh: refreshToken }),
-  getCurrentUser: () => apiCall('GET', '/auth/user/'),
-  updateProfile: (userData) => apiCall('PATCH', '/auth/user/', userData),
+  getCurrentUser: () => apiCall('GET', '/users/me/'),
+  updateProfile: (userData) => apiCall('PATCH', '/users/me/', userData),
   changePassword: (passwordData) => apiCall('POST', '/auth/change-password/', passwordData),
   
   // 2FA endpoints
