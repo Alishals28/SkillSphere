@@ -35,8 +35,8 @@
 .dashboard-container {
   position: relative;
   z-index: 1;
-  padding: var(--space-xl);
-  max-width: 100%;
+  padding: var(--space-lg) var(--space-xl);
+  max-width: none;
   width: 100%;
   margin: 0;
 }
@@ -144,9 +144,10 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr 350px;
   gap: var(--space-xl);
   margin-bottom: var(--space-2xl);
+  width: 100%;
 }
 
 .main-content {

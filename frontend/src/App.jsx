@@ -7,6 +7,10 @@ import RegisterPage from './pages/auth/RegisterPage';
 import LearnerDashboard from './pages/dashboard/LearnerDashboard';
 import MentorDashboard from './pages/dashboard/MentorDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
+import UserProfile from './pages/profile/UserProfile';
+import SettingsPage from './pages/settings/Settings';
+import NotificationsCenter from './pages/notifications/NotificationsCenter';
+import Analytics from './pages/analytics/Analytics';
 import './styles/globals.css';
 
 function App() {
@@ -49,6 +53,46 @@ function App() {
               element={
                 <ProtectedRoute>
                   <LearnerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Profile Routes */}
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Settings Routes */}
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Notifications Routes */}
+            <Route 
+              path="/notifications" 
+              element={
+                <ProtectedRoute>
+                  <NotificationsCenter />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Analytics Routes */}
+            <Route 
+              path="/analytics" 
+              element={
+                <ProtectedRoute>
+                  <Analytics />
                 </ProtectedRoute>
               } 
             />

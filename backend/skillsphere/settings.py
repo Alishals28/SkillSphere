@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'reviews',
     'integrations',
     'gamification',
+    'dashboard',
 ]
 
 MIDDLEWARE = [

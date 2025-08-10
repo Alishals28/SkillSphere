@@ -202,11 +202,41 @@ export const gamificationAPI = {
   checkBadges: () => apiCall('POST', '/gamification/check-badges/'),
 };
 
+export const dashboardAPI = {
+  getLearnerDashboard: () => apiCall('GET', '/dashboard/learner/'),
+  getMentorDashboard: () => apiCall('GET', '/dashboard/mentor/'),
+};
+
 export const aiAPI = {
   getRecommendations: (type, params) => apiCall('GET', `/ai/recommendations/${type}/`, { params }),
   getMentorSuggestions: () => apiCall('GET', '/ai/mentor-suggestions/'),
   getSkillAssessment: (skillId) => apiCall('GET', `/ai/skill-assessment/${skillId}/`),
   generateLearningPath: (goals) => apiCall('POST', '/ai/learning-path/', { goals }),
+};
+
+export const userAPI = {
+  // Get current user profile
+  getProfile: () => apiCall('GET', '/users/me/'),
+  
+  // Update user profile
+  updateProfile: (data) => apiCall('PUT', '/users/me/', data),
+  
+  // Upload profile picture
+  uploadProfilePicture: (formData) => apiCall('POST', '/users/me/avatar/', formData, {
+    'Content-Type': 'multipart/form-data'
+  }),
+  
+  // Delete profile picture
+  deleteProfilePicture: () => apiCall('DELETE', '/users/me/avatar/'),
+  
+  // Change password
+  changePassword: (data) => apiCall('POST', '/users/change-password/', data),
+  
+  // Update preferences
+  updatePreferences: (data) => apiCall('PUT', '/users/me/preferences/', data),
+  
+  // Get user statistics
+  getUserStats: () => apiCall('GET', '/users/me/stats/'),
 };
 
 export { api, apiCall, tokenManager };

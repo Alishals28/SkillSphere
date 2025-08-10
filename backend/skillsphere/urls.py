@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/reviews/', include('reviews.urls')),
     path('api/integrations/', include('integrations.urls')),
     path('api/gamification/', include('gamification.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
     
     # Public endpoints (no auth required)
     path('api/', include(availability_public_urls)),
