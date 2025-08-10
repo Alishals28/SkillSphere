@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { dashboardAPI } from '../../services/api';
+import AIAssistant from '../../components/ai/AIAssistant';
+import AIFloatingButton from '../../components/ai/AIFloatingButton';
 import { 
   Calendar, 
   Users, 
@@ -27,6 +29,10 @@ const MentorDashboard = () => {
   const [error, setError] = useState(null);
   const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
+  
+  // AI Assistant state
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiNotification, setAiNotification] = useState(true);
 
   // Mock messages data
   const mockMessages = [
@@ -322,6 +328,14 @@ const MentorDashboard = () => {
         
         <button 
           className="action-btn secondary"
+          onClick={() => window.location.href = '/chat'}
+        >
+          <MessageSquare size={20} />
+          Messages
+        </button>
+        
+        <button 
+          className="action-btn secondary"
           onClick={() => window.location.href = '/students'}
         >
           <Users size={20} />
@@ -607,6 +621,25 @@ const MentorDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Assistant */}
+      <AIFloatingButton 
+        onClick={() => {
+          setShowAIAssistant(!showAIAssistant);
+          setAiNotification(false);
+        }}
+        hasNotification={aiNotification}
+      />
+      
+      <AIAssistant 
+        isOpen={showAIAssistant}
+        onToggle={() => setShowAIAssistant(!showAIAssistant)}
+        context={{ 
+          userType: 'mentor',
+          upcomingSessions: dashboardData?.upcomingSessions || [],
+          recentSessions: dashboardData?.recentSessions || []
+        }}
+      />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { dashboardAPI } from '../../services/api';
+import AIAssistant from '../../components/ai/AIAssistant';
+import AIFloatingButton from '../../components/ai/AIFloatingButton';
 import { 
   Calendar, 
   Users, 
@@ -20,7 +22,8 @@ import {
   Settings,
   AlertCircle,
   Bell,
-  BarChart3
+  BarChart3,
+  LogOut
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -31,6 +34,10 @@ const LearnerDashboard = () => {
   const [error, setError] = useState(null);
   const [messagesDropdownOpen, setMessagesDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
+  
+  // AI Assistant state
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiNotification, setAiNotification] = useState(true);
 
   // Mock messages data for learners (different senders - mentors)
   const mockMessages = [
@@ -303,6 +310,10 @@ const LearnerDashboard = () => {
         <button className="action-btn primary" onClick={() => window.location.href = '/book-session'}>
           <Calendar size={20} />
           Book a Session
+        </button>
+        <button className="action-btn secondary" onClick={() => window.location.href = '/chat'}>
+          <MessageSquare size={20} />
+          Messages
         </button>
         <button className="action-btn secondary" onClick={() => window.location.href = '/mentors'}>
           <Users size={20} />
@@ -578,6 +589,25 @@ const LearnerDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Assistant */}
+      <AIFloatingButton 
+        onClick={() => {
+          setShowAIAssistant(!showAIAssistant);
+          setAiNotification(false);
+        }}
+        hasNotification={aiNotification}
+      />
+      
+      <AIAssistant 
+        isOpen={showAIAssistant}
+        onToggle={() => setShowAIAssistant(!showAIAssistant)}
+        context={{ 
+          userType: 'learner',
+          currentSkills: dashboardData?.skills || [],
+          recentSessions: dashboardData?.recentSessions || []
+        }}
+      />
     </div>
   );
 };

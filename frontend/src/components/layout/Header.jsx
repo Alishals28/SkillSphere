@@ -25,6 +25,7 @@ const Header = () => {
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
               <Link to="/mentors" className="nav-link">Find Mentors</Link>
               <Link to="/sessions" className="nav-link">Sessions</Link>
+              <Link to="/chat" className="nav-link">Chat</Link>
               
               <div className="header-actions">
                 <button 

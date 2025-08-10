@@ -1,0 +1,281 @@
+/* Recent Activity */
+.recent-activity {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.activity-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.activity-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.refresh-activity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.refresh-activity:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Activity List */
+.activity-list {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.activity-item:hover {
+  background: #f8fafc;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+/* Color variants */
+.activity-item.green .activity-icon {
+  background: #f0fdf4;
+  color: #10b981;
+}
+
+.activity-item.blue .activity-icon {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.activity-item.purple .activity-icon {
+  background: #faf5ff;
+  color: #8b5cf6;
+}
+
+.activity-item.teal .activity-icon {
+  background: #f0fdfa;
+  color: #14b8a6;
+}
+
+.activity-item.orange .activity-icon {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.activity-item.red .activity-icon {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.activity-user {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.activity-action {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.activity-timestamp {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.activity-status {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.alert {
+  background: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.pending {
+  background: #f59e0b;
+}
+
+.status-indicator.success {
+  background: #10b981;
+}
+
+/* Footer */
+.activity-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.view-all-btn {
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid #14b8a6;
+  border-radius: 6px;
+  color: #14b8a6;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-all-btn:hover {
+  background: #14b8a6;
+  color: white;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Scrollbar styling */
+.activity-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.activity-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .activity-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .activity-item {
+    padding: 12px 20px;
+    gap: 12px;
+  }
+  
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .activity-text {
+    gap: 1px;
+  }
+  
+  .activity-user,
+  .activity-action {
+    font-size: 13px;
+  }
+  
+  .activity-timestamp {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-header h2 {
+    font-size: 18px;
+  }
+  
+  .activity-item {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .refresh-activity {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}

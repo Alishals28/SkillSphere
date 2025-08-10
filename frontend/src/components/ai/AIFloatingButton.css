@@ -1,0 +1,265 @@
+/* AI Floating Button Styles */
+.ai-floating-container {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 999;
+}
+
+.ai-floating-button {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.ai-floating-button:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.ai-floating-button:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Background and Ring Effects */
+.ai-button-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #14b8a6 0%, #0f9b8e 50%, #0891b2 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 4px 20px rgba(20, 184, 166, 0.4),
+    0 2px 10px rgba(20, 184, 166, 0.3);
+  transition: all 0.3s ease;
+}
+
+.ai-floating-button:hover .ai-button-bg {
+  box-shadow: 
+    0 8px 30px rgba(20, 184, 166, 0.5),
+    0 4px 15px rgba(20, 184, 166, 0.4);
+}
+
+.ai-button-ring {
+  position: absolute;
+  inset: -4px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #14b8a6, #0f9b8e, #0891b2, #14b8a6) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask-composite: xor;
+  animation: rotate 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ai-floating-button:hover .ai-button-ring {
+  opacity: 0.7;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Icon */
+.ai-button-icon {
+  position: relative;
+  z-index: 2;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.ai-floating-button:hover .ai-button-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Sparkle Effects */
+.ai-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.8);
+  animation: sparkleFloat 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+.sparkle-1 {
+  top: 8px;
+  right: 8px;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  bottom: 12px;
+  left: 8px;
+  animation-delay: 0.7s;
+}
+
+.sparkle-3 {
+  top: 20px;
+  left: 12px;
+  animation-delay: 1.4s;
+}
+
+.ai-floating-button:hover .sparkle {
+  animation-play-state: running;
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1);
+  }
+}
+
+/* Notification Badge */
+.ai-notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 3px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  animation: notificationPulse 2s infinite;
+}
+
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+@keyframes notificationPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Tooltip */
+.ai-tooltip {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  background: #1e293b;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: tooltipFadeIn 0.2s ease-out;
+  z-index: 4;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  top: 100%;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1e293b;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ai-floating-container {
+    bottom: 80px;
+    right: 15px;
+  }
+  
+  .ai-floating-button {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .ai-button-icon {
+    transform: scale(0.9);
+  }
+  
+  .ai-tooltip {
+    display: none; /* Hide tooltip on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-floating-container {
+    bottom: 70px;
+    right: 10px;
+  }
+  
+  .ai-floating-button {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Accessibility */
+.ai-floating-button:focus {
+  outline: none;
+}
+
+.ai-floating-button:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ai-floating-button,
+  .ai-button-bg,
+  .ai-button-icon,
+  .sparkle,
+  .ai-button-ring {
+    animation: none;
+    transition: none;
+  }
+  
+  .ai-floating-button:hover {
+    transform: none;
+  }
+}

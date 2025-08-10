@@ -15,6 +15,8 @@ import BookSessionPage from './pages/booking/BookSessionPage';
 import MentorsPage from './pages/mentors/MentorsPage';
 import SchedulePage from './pages/schedule/SchedulePage';
 import SessionsPage from './pages/sessions/SessionsPage';
+import SessionJoinPage from './pages/sessions/SessionJoinPage';
+import ChatPage from './pages/chat/ChatPage';
 import './styles/globals.css';
 
 function App() {
@@ -105,6 +107,32 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SessionsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId/join" 
+              element={
+                <ProtectedRoute>
+                  <SessionJoinPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Chat Routes */}
+            <Route 
+              path="/chat" 
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/chat/:chatId" 
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
                 </ProtectedRoute>
               } 
             />
